@@ -47,7 +47,6 @@ def connect(host, port, dialog=b''):
         print("something's wrong with %s:%d. Exception is %s" % e)
     finally:
         s.close()
-    print(data)
     return data.split('\r\n')[0]
 
 
@@ -61,7 +60,8 @@ def check_smtp(host):
 
 def check_http(host):
     if 'https' in host:
-        port = 443
+        # TODO: use requests to check
+        return False, 0
     else:
         port = 80
     parse_object = urlparse(host)
