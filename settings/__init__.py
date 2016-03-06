@@ -3,8 +3,8 @@
 import os
 
 
-ERRORS_LIMIT = 1
-CHECK_TIME = 5
+ERRORS_LIMIT = int(os.environ.get('ERRORS_LIMIT'))
+CHECK_TIME = int(os.environ.get('CHECK_TIME'))
 
 HOSTS = [(host, 'http') for host in os.environ.get('HOSTS').split(',')]
 TELEGRAM_GROUP_ID = os.environ.get('TELEGRAM_GROUP_ID')
