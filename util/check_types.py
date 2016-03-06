@@ -4,6 +4,9 @@ import socket, sys
 from datetime import datetime
 from urllib.parse import urlparse
 
+from gevent import monkey
+monkey.patch_socket()
+
 smtp_response = '220'
 http_ok_response = 'HTTP/1.1 200 OK'
 http_not_found_response = 'HTTP/1.1 404 Not Found'
@@ -18,6 +21,7 @@ HOST: {}
 
 def connect(host, port, dialog=b''):
 
+    data = ''
     try:
         s = None
         for res in socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM):
