@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from time import sleep, time
+import signal
 
 from daemonize import Daemonize
 import gevent
@@ -24,7 +25,7 @@ def check(host):
         elif check_type == 'smtp':
             result, response_time = check_smtp(host)
 
-        if result:
+        if not result:
             errors += 1
             if not start_time:
                 start_time = time()
@@ -38,11 +39,14 @@ def check(host):
             errors = 0
             start_time = None
 
-        print(host, check_type, errors, response_time)
+        if DEBUG:
+            print(host, check_type, errors, response_time)
+
         gevent.sleep(CHECK_TIME)
 
 
 def main():
+    gevent.signal(signal.SIGQUIT, gevent.kill)
     gevent.joinall([gevent.spawn(check, host) for host in HOSTS])
 
 pid = "/tmp/test.pid"
