@@ -4,7 +4,11 @@ import json
 import requests
 import telepot
 
-from settings import TELEGRAM_TOKEN, PUSHBULLET_TOKEN, EMAILS, TELEGRAM_GROUP_ID
+from settings import (
+    TELEGRAM_TOKEN, PUSHBULLET_TOKEN, EMAILS, TELEGRAM_GROUP_ID,
+    MAILDOCKER_API_KEY, MAILDOCKER_API_SECRET, MAILDOCKER_DOMAIN,
+    MAILDOCKER_FROM_NAME, MAILDOCKER_FROM_EMAIL
+)
 
 PUSHBULLET_URL = 'https://api.pushbullet.com/v2/pushes'
 PUSHBULLET_HEADERS = {'content-type': 'application/json'}
@@ -62,13 +66,17 @@ class Notify(object):
         )
 
     def send_email(self):
-        PUSHBULLET_HEADERS['Access-Token'] = self.pushbullet_token
-        PUSHBULLET_PAYLOAD['title'] = self.message['title']
-        PUSHBULLET_PAYLOAD['body'] = self.message['body']
-        PUSHBULLET_PAYLOAD['email'] = self.email
+        mail = {}
+        mail['from'] = {}
+        mail['from']['name'] = MAILDOCKER_FROM_NAME
+        mail['from']['email'] = MAILDOCKER_FROM_EMAIL
+        mail['to'] = {}
+        mail['to']['email'] = self.email
+        mail['subject'] = self.message['title']
+        mail['text'] = self.message['body']
+        url = 'http://{}.ecentry.io/api/maildocker/v1/mail/'.format(MAILDOCKER_DOMAIN)
         requests.post(
-            PUSHBULLET_URL,
-            data=json.dumps(PUSHBULLET_PAYLOAD),
-            headers=PUSHBULLET_HEADERS
+            url,
+            data=json.dumps(mail),
+            auth=(MAILDOCKER_API_KEY, MAILDOCKER_API_SECRET)
         )
-
