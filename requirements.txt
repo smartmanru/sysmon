@@ -1,3 +1,4 @@
 requests
 daemonize
 telepot
+gevent
