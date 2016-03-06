@@ -2,7 +2,7 @@
 
 import os
 
-
+DEBUG = os.environ.get('DEBUG') == 'True'
 ERRORS_LIMIT = int(os.environ.get('ERRORS_LIMIT'))
 CHECK_TIME = int(os.environ.get('CHECK_TIME'))
 
