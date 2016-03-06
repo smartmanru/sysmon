@@ -4,7 +4,7 @@ from time import sleep, time
 
 from daemonize import Daemonize
 
-from settings import DEBUG, HOSTS, ERRORS_LIMIT, CHECK_TIME
+from settings import DEBUG, FOREGROUND, HOSTS, ERRORS_LIMIT, CHECK_TIME
 from util.check_types import check_http, check_smtp
 from util.notify import Notify
 
@@ -29,7 +29,7 @@ def main():
             elif check_type == 'smtp':
                 result, response_time = check_smtp(host)
 
-            if not result or DEBUG:
+            if not result:
                 errors[host + '_' + check_type] += 1
                 if not start_time[host + '_' + check_type]:
                     start_time[host + '_' + check_type] = time()
@@ -45,10 +45,12 @@ def main():
 
             if DEBUG:
                 print(host, check_type, errors[host + '_' + check_type]), response_time
-                print(host, check_type, start_time[host + '_' + check_type])
+
+        if DEBUG:
+            print('-----------------------')
 
         sleep(CHECK_TIME)
 
 pid = "/tmp/test.pid"
-daemon = Daemonize(app="test_app", pid=pid, action=main, foreground=DEBUG)
+daemon = Daemonize(app="test_app", pid=pid, action=main, foreground=FOREGROUND)
 daemon.start()

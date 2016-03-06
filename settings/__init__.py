@@ -3,6 +3,7 @@
 import os
 
 DEBUG = os.environ.get('DEBUG') == 'True'
+FOREGROUND = os.environ.get('FOREGROUND') == 'True'
 ERRORS_LIMIT = int(os.environ.get('ERRORS_LIMIT'))
 CHECK_TIME = int(os.environ.get('CHECK_TIME'))
 
