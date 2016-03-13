@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from time import sleep, time
+from time import time
 import signal
 
 from daemonize import Daemonize
 import gevent
 
+from extensions.checks.base import MetaRegister
+
 from settings import DEBUG, FOREGROUND, HOSTS, ERRORS_LIMIT, CHECK_TIME
-from util.check_types import check_http, check_smtp
 from util.notify import Notify
 
 
@@ -18,14 +19,10 @@ def check(host):
     start_time = None
 
     while True:
+        service = MetaRegister.check_options[check_type]
+        result, response_time = service(host).check()
 
-        if check_type == 'http':
-            result, response_time = check_http(host)
-
-        elif check_type == 'smtp':
-            result, response_time = check_smtp(host)
-
-        if not result:
+        if result:
             errors += 1
             if not start_time:
                 start_time = time()
@@ -50,5 +47,5 @@ def main():
     gevent.joinall([gevent.spawn(check, host) for host in HOSTS])
 
 pid = "/tmp/test.pid"
-daemon = Daemonize(app="test_app", pid=pid, action=main, foreground=FOREGROUND)
+daemon = Daemonize(app="sysmon", pid=pid, action=main, foreground=FOREGROUND)
 daemon.start()
